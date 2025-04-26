@@ -195,13 +195,13 @@ class HomeController extends Controller
 
             $ruta = "https://mensajex.com/api/ChatBot/apisend";
 
-            Http::post($ruta, [
+            $mensaje = Http::post($ruta, [
                 "numero_celular" => $request->telefono,
                 "mensaje" => 'Aquí le enviamos el detalle de su pedido',
                 "ruta_imagen" => 'https://zapatillas.mastersoftstore.com/storage/' . $pdfPath,
             ]);
 
-            return response()->json(['status' => true, 'msg' => $pdfPath]); 
+            return response()->json(['status' => true, 'msg' => $mensaje->body()]); 
         } catch (\Throwable $th) {
             //throw $th;
         }        
