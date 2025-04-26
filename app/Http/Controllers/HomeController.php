@@ -198,7 +198,7 @@ class HomeController extends Controller
             Http::post($ruta, [
                 "numero_celular" => $request->telefono,
                 "mensaje" => 'Aquí le enviamos el detalle de su pedido',
-                "ruta_imagen" => 'http:127.0.0.1:800/storage/' . $pdfPath,
+                "ruta_imagen" => 'https://zapatillas.mastersoftstore.com/storage/' . $pdfPath,
             ]);
 
             return response()->json(['status' => true, 'msg' => $pdfPath]); 
