@@ -200,6 +200,7 @@ class HomeController extends Controller
                 "mensaje" => 'Aquí le enviamos el detalle de su pedido',
                 "ruta_imagen" => 'https://zapatillas.mastersoftstore.com/storage/' . $pdfPath,
             ]);
+            
 
             return response()->json(['status' => true, 'msg' => $mensaje->body()]); 
         } catch (\Throwable $th) {
