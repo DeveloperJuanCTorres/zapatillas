@@ -184,7 +184,7 @@ class HomeController extends Controller
             $data = ['nombre' => $request->nombre,
                     'apellidos' => $request->apellidos,
                     'empresa' => $request->empresa,
-                    'telefono' => $request->telefono,
+                    'telefono' => $request->codigo . $request->telefono,
                     'email' => $request->email,
                     'direccion' => $request->direccion];
 
@@ -196,7 +196,7 @@ class HomeController extends Controller
                 'name' =>$request->nombre,
                 'apellidos' => $request->apellidos,
                 'empresa' => $request->empresa,
-                'telefono' => $request->telefono,
+                'telefono' => $request->codigo . $request->telefono,
                 'email' => $request->email,
                 'direccion' => $request->direccion
             ]);
@@ -212,7 +212,7 @@ class HomeController extends Controller
             $ruta = "https://mensajex.com/api/ChatBot/apisend";
 
             $mensaje = Http::post($ruta, [
-                "numero_celular" => $request->telefono,
+                "numero_celular" => $request->codigo . $request->telefono,
                 "mensaje" => 'Aquí le enviamos el detalle de su pedido',
                 "ruta_imagen" => 'https://zapatillas.mastersoftstore.com/storage/pedidos/' . $pdfPath,
             ]);

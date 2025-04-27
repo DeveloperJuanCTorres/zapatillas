@@ -81,7 +81,7 @@
                                     <input type="text" class="form-control" id="company" name="company" placeholder="Nombre de empresa">
                                 </div>
                                 <div class="col-md-6 form-group p_star">
-                                    <input type="text" class="form-control" id="telefono" name="telefono" required placeholder="Teléfono">
+                                    @include('phone')
                                 </div>
                                 <div class="col-md-6 form-group p_star">
                                     <input type="text" class="form-control" id="email" name="email" placeholder="Email">
@@ -178,6 +178,7 @@
             var nombre = $("#nombre").val();
             var apellidos = $("#apellidos").val();
             var empresa = $("#company").val();
+            var codigo = $("#codigo").val();
             var telefono = $("#telefono").val();
             var email = $("#email").val();
             var direccion = $("#direccion").val();
@@ -279,6 +280,7 @@
                     nombre: nombre,
                     apellidos : apellidos,
                     empresa : empresa,
+                    codigo : codigo,
                     telefono: telefono,
                     email: email,
                     direccion: direccion

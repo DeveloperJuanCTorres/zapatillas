@@ -27,6 +27,7 @@
 	<link rel="stylesheet" href="css/ion.rangeSlider.skinFlat.css" />
 	<link rel="stylesheet" href="css/magnific-popup.css">
 	<link rel="stylesheet" href="css/main.css">
+	<link href="css/phone.css" rel="stylesheet">
 
     <!-- Scripts -->
     <!-- vite(['resources/sass/app.scss', 'resources/js/app.js']) -->
@@ -53,6 +54,7 @@
 	<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCjCGmQ0Uq4exrzdcL6rvxywDDOvfAu6eE"></script>
 	<script src="js/gmaps.min.js"></script>
 	<script src="js/main.js"></script>
+	<script src="js/phone.js"></script>
 	@stack('scripts')
 </body>
 </html>
