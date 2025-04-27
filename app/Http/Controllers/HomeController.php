@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Brand;
 use App\Models\Color;
 use App\Models\Company;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\Taxonomy;
 use Illuminate\Console\View\Components\Alert;
@@ -190,19 +191,34 @@ class HomeController extends Controller
             $pdf = Pdf::loadView('pdf', $data);    
 
             // Generar el PDF y guardarlo en el storage/app/public/facturas/
-            $pdfPath = 'pedidos/pedido3.pdf';
-            Storage::put('public/' . $pdfPath, $pdf->output());
+
+            $orden = Order::create([
+                'name' =>$request->nombre,
+                'apellidos' => $request->apellidos,
+                'empresa' => $request->empresa,
+                'telefono' => $request->telefono,
+                'email' => $request->email,
+                'direccion' => $request->direccion
+            ]);
+            $pdfPath = 'pedido_' .$orden->id . '.pdf';
+            Storage::put('public/pedidos/' . $pdfPath, $pdf->output());
+
+            $ordenid = Order::where('id',$orden->id)->find(1);
+
+            $orden->update([
+                'pdf' => 'pedidos/' . $pdfPath
+            ]);
 
             $ruta = "https://mensajex.com/api/ChatBot/apisend";
 
             $mensaje = Http::post($ruta, [
                 "numero_celular" => $request->telefono,
                 "mensaje" => 'Aquí le enviamos el detalle de su pedido',
-                "ruta_imagen" => 'https://zapatillas.mastersoftstore.com/storage/' . $pdfPath,
+                "ruta_imagen" => 'https://zapatillas.mastersoftstore.com/storage/pedidos' . $pdfPath,
             ]);
-            
 
-            return response()->json(['status' => true, 'msg' => $mensaje->body()]); 
+
+            return response()->json(['status' => true, 'msg' => 'El detalle de su pedido se envió a su WhatsApp']); 
         } catch (\Throwable $th) {
             //throw $th;
         }        
