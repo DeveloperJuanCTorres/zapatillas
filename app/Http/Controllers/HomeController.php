@@ -214,7 +214,7 @@ class HomeController extends Controller
             $mensaje = Http::post($ruta, [
                 "numero_celular" => $request->telefono,
                 "mensaje" => 'Aquí le enviamos el detalle de su pedido',
-                "ruta_imagen" => 'https://zapatillas.mastersoftstore.com/storage/pedidos' . $pdfPath,
+                "ruta_imagen" => 'https://zapatillas.mastersoftstore.com/storage/pedidos/' . $pdfPath,
             ]);
 
 
