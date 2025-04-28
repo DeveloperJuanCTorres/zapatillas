@@ -28,7 +28,7 @@
 							<li class="nav-item">
 								<a href="{{route('cart')}}" class="cart">
 									<span class="ti-bag"></span>
-									<span class="badge bg-danger" style="line-height: 15px !important;margin-bottom: 10px; display: table-caption;height: 20px;width: 20px; border-radius: 20px;color: white;">{{\Cart::count()}}</span></a></li>
+									<span class="badge bg-danger" id="cartCount" style="line-height: 15px !important;margin-bottom: 10px; display: table-caption;height: 20px;width: 20px; border-radius: 20px;color: white;">{{\Cart::count()}}</span></a></li>
 							<li class="nav-item">
 								<button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
 							</li>
@@ -54,11 +54,10 @@
 		<div class="container">
 			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 				<div class="col-first">
-					<h1>Shop Category page</h1>
+					<h1>Tienda</h1>
 					<nav class="d-flex align-items-center">
-						<a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-						<a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
-						<a href="category.html">Fashon Category</a>
+						<a href="/">Inicio<span class="lnr lnr-arrow-right"></span></a>
+						<a href="#">Tienda</a>
 					</nav>
 				</div>
 			</div>
@@ -69,294 +68,119 @@
 	<div class="container py-5">
 		<div class="row">
 			<div class="col-xl-3 col-lg-4 col-md-5">
-				<div class="sidebar-categories">
-					<div class="head">Filtro por Categorías</div>
-					<ul class="main-categories">
-						@foreach($categories as $key => $item)
-						<li class="main-nav-list"><a href="#">{{$item->name}}<span class="number">({{$item->products->count()}})</span></a></li>
-						@endforeach
-					</ul>
-				</div>
-				<div class="sidebar-filter mt-50">
-					<div class="top-filter-head">Filtro por Productos</div>
-					<div class="common-filter">
-						<div class="head">Marcas</div>
-						<form action="#">
-							<ul>								
-								@foreach($brands as $key => $item)
-								<li class="filter-list"><input class="pixel-radio" type="radio" id="{{$item->name}}" name="brand"><label for="appl{{$item->name}}e">{{$item->name}}<span>({{$item->products->count()}})</span></label></li>
-								@endforeach
-							</ul>
-						</form>
-					</div>
-					<div class="common-filter">
-						<div class="head">Color</div>
-						<form action="#">
+				<form id="filterForm">
+					<div class="sidebar-categories">
+						<div class="head">Filtro por Categorías</div>
+						<ul class="main-categories">
+							@foreach($categories as $key => $category)
 							<ul>
-								@foreach($colors as $key => $item)
-								<li class="filter-list"><input class="pixel-radio" type="radio" id="{{$item->name}}" name="color"><label for="{{$item->name}}">{{$item->name}}<span>({{$item->products->count()}})</span></label></li>
-								@endforeach
+								<li class="filter-list">
+									<input class="pixel-radio" type="radio" name="categories[]" value="{{ $category->id }}">									
+									<label for="{{$category->name}}">{{$category->name}}
+										<span>({{$category->products->count()}})</span>
+									</label>
+								</li>
 							</ul>
-						</form>
+							@endforeach
+						</ul>
 					</div>
-				</div>
+					<div class="sidebar-filter mt-50">
+						<div class="top-filter-head">Filtro por Productos</div>
+						<div class="common-filter">
+							<div class="head">Marcas</div>
+							<form action="#">
+								<ul>								
+									@foreach($brands as $key => $brand)
+									<li class="filter-list">
+										<input class="pixel-radio" type="radio" name="brands[]" value="{{ $brand->id }}">
+										<label for="{{$brand->name}}">{{$brand->name}}
+											<span>({{$brand->products->count()}})</span>
+										</label>
+									</li>
+									@endforeach
+								</ul>
+							</form>
+						</div>
+						<div class="common-filter">
+							<div class="head">Color</div>
+							<form action="#">
+								<ul>
+									@foreach($colors as $key => $color)
+									<li class="filter-list">
+										<input class="pixel-radio" type="radio" name="colors[]" value="{{ $color->id }}">
+										<label for="{{$color->name}}">{{$color->name}}
+											<span>({{$color->products->count()}})</span>
+										</label>
+									</li>
+									@endforeach
+								</ul>
+							</form>
+						</div>
+					</div>
+				</form>
 			</div>
-			<div class="col-xl-9 col-lg-8 col-md-7">
-				<!-- Start Filter Bar -->
-				<div class="filter-bar d-flex flex-wrap align-items-center">
-					<div class="sorting">
-						<select>
-							<option value="1">Default sorting</option>
-							<option value="1">Default sorting</option>
-							<option value="1">Default sorting</option>
-						</select>
-					</div>
-					<div class="sorting mr-auto">
-						<select>
-							<option value="1">Show 12</option>
-							<option value="1">Show 12</option>
-							<option value="1">Show 12</option>
-						</select>
-					</div>
-					<div class="pagination">
-						<a href="#" class="prev-arrow"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></a>
-						<a href="#" class="active">1</a>
-						<a href="#">2</a>
-						<a href="#">3</a>
-						<a href="#" class="dot-dot"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
-						<a href="#">6</a>
-						<a href="#" class="next-arrow"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
-					</div>
+
+			<!-- PRODUCT LIST -->
+			<div class="col-xl-9 col-lg-8 col-md-7">   
+				 <!-- Spinner oculto al principio -->
+				<div id="loadingSpinner" class="hidden absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+					<div class="w-12 h-12 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
 				</div>
-				<!-- End Filter Bar -->
-				<!-- Start Best Seller -->
-				<section class="lattest-product-area pb-40 category-list">
-					<div class="row">
-						<!-- single product -->
-						<div class="col-lg-4 col-md-6">
-							<div class="single-product">
-								<img class="img-fluid" src="img/product/p1.jpg" alt="">
-								<div class="product-details">
-									<h6>addidas New Hammer sole
-										for Sports person</h6>
-									<div class="price">
-										<h6>$150.00</h6>
-										<h6 class="l-through">$210.00</h6>
-									</div>
-									<div class="prd-bottom">
 
-										<a href="" class="social-info">
-											<span class="ti-bag"></span>
-											<p class="hover-text">add to bag</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-heart"></span>
-											<p class="hover-text">Wishlist</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-sync"></span>
-											<p class="hover-text">compare</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-move"></span>
-											<p class="hover-text">view more</p>
-										</a>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- single product -->
-						<div class="col-lg-4 col-md-6">
-							<div class="single-product">
-								<img class="img-fluid" src="img/product/p2.jpg" alt="">
-								<div class="product-details">
-									<h6>addidas New Hammer sole
-										for Sports person</h6>
-									<div class="price">
-										<h6>$150.00</h6>
-										<h6 class="l-through">$210.00</h6>
-									</div>
-									<div class="prd-bottom">
-
-										<a href="" class="social-info">
-											<span class="ti-bag"></span>
-											<p class="hover-text">add to bag</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-heart"></span>
-											<p class="hover-text">Wishlist</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-sync"></span>
-											<p class="hover-text">compare</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-move"></span>
-											<p class="hover-text">view more</p>
-										</a>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- single product -->
-						<div class="col-lg-4 col-md-6">
-							<div class="single-product">
-								<img class="img-fluid" src="img/product/p3.jpg" alt="">
-								<div class="product-details">
-									<h6>addidas New Hammer sole
-										for Sports person</h6>
-									<div class="price">
-										<h6>$150.00</h6>
-										<h6 class="l-through">$210.00</h6>
-									</div>
-									<div class="prd-bottom">
-
-										<a href="" class="social-info">
-											<span class="ti-bag"></span>
-											<p class="hover-text">add to bag</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-heart"></span>
-											<p class="hover-text">Wishlist</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-sync"></span>
-											<p class="hover-text">compare</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-move"></span>
-											<p class="hover-text">view more</p>
-										</a>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- single product -->
-						<div class="col-lg-4 col-md-6">
-							<div class="single-product">
-								<img class="img-fluid" src="img/product/p4.jpg" alt="">
-								<div class="product-details">
-									<h6>addidas New Hammer sole
-										for Sports person</h6>
-									<div class="price">
-										<h6>$150.00</h6>
-										<h6 class="l-through">$210.00</h6>
-									</div>
-									<div class="prd-bottom">
-
-										<a href="" class="social-info">
-											<span class="ti-bag"></span>
-											<p class="hover-text">add to bag</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-heart"></span>
-											<p class="hover-text">Wishlist</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-sync"></span>
-											<p class="hover-text">compare</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-move"></span>
-											<p class="hover-text">view more</p>
-										</a>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- single product -->
-						<div class="col-lg-4 col-md-6">
-							<div class="single-product">
-								<img class="img-fluid" src="img/product/p5.jpg" alt="">
-								<div class="product-details">
-									<h6>addidas New Hammer sole
-										for Sports person</h6>
-									<div class="price">
-										<h6>$150.00</h6>
-										<h6 class="l-through">$210.00</h6>
-									</div>
-									<div class="prd-bottom">
-
-										<a href="" class="social-info">
-											<span class="ti-bag"></span>
-											<p class="hover-text">add to bag</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-heart"></span>
-											<p class="hover-text">Wishlist</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-sync"></span>
-											<p class="hover-text">compare</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-move"></span>
-											<p class="hover-text">view more</p>
-										</a>
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- single product -->
-						<div class="col-lg-4 col-md-6">
-							<div class="single-product">
-								<img class="img-fluid" src="img/product/p6.jpg" alt="">
-								<div class="product-details">
-									<h6>addidas New Hammer sole
-										for Sports person</h6>
-									<div class="price">
-										<h6>$150.00</h6>
-										<h6 class="l-through">$210.00</h6>
-									</div>
-									<div class="prd-bottom">
-
-										<a href="" class="social-info">
-											<span class="ti-bag"></span>
-											<p class="hover-text">add to bag</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-heart"></span>
-											<p class="hover-text">Wishlist</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-sync"></span>
-											<p class="hover-text">compare</p>
-										</a>
-										<a href="" class="social-info">
-											<span class="lnr lnr-move"></span>
-											<p class="hover-text">view more</p>
-										</a>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</section>
-				<!-- End Best Seller -->
-				<!-- Start Filter Bar -->
-				<div class="filter-bar d-flex flex-wrap align-items-center">
-					<div class="sorting mr-auto">
-						<select>
-							<option value="1">Show 12</option>
-							<option value="1">Show 12</option>
-							<option value="1">Show 12</option>
-						</select>
-					</div>
-					<div class="pagination">
-						<a href="#" class="prev-arrow"><i class="fa fa-long-arrow-left" aria-hidden="true"></i></a>
-						<a href="#" class="active">1</a>
-						<a href="#">2</a>
-						<a href="#">3</a>
-						<a href="#" class="dot-dot"><i class="fa fa-ellipsis-h" aria-hidden="true"></i></a>
-						<a href="#">6</a>
-						<a href="#" class="next-arrow"><i class="fa fa-long-arrow-right" aria-hidden="true"></i></a>
-					</div>
-				</div>
-				<!-- End Filter Bar -->
+				<section class="lattest-product-area pb-40 category-list" id="productContainer">
+					@include('product-list')
+				</section>				
+    		<!-- END PRODUCT LIST -->
 			</div>
 		</div>
 	</div>
 
     @include('footer')
+
+	@push('scripts')
+	<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="js/addcart.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', function () {
+		const form = document.getElementById('filterForm');
+		const productContainer = document.getElementById('productContainer');
+		const loadingSpinner = document.getElementById('loadingSpinner');
+
+		form.addEventListener('change', function () {
+			fetchProducts();
+		});
+
+		function fetchProducts(page = 1) {
+			const formData = new FormData(form);
+			const params = new URLSearchParams(formData);
+
+			loadingSpinner.classList.remove('hidden'); // Mostrar spinner
+
+			fetch(`{{ route('tienda.products') }}?${params.toString()}&page=${page}`, {
+				headers: {
+					'X-Requested-With': 'XMLHttpRequest'
+				}
+			})
+			.then(response => response.text())
+			.then(html => {
+				productContainer.innerHTML = html;
+			})
+			.finally(() => {
+				loadingSpinner.classList.add('hidden'); // Ocultar spinner
+			});
+		}
+
+		// Paginación AJAX
+		document.addEventListener('click', function(e) {
+			if (e.target.closest('.pagination a')) {
+				e.preventDefault();
+				const url = new URL(e.target.href);
+				const page = url.searchParams.get('page');
+				fetchProducts(page);
+			}
+		});
+	});
+	</script>
+	@endpush
 
 @endsection

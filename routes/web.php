@@ -20,12 +20,12 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index']);
-Route::get('/tienda', [App\Http\Controllers\HomeController::class, 'tienda']);
+Route::get('/tienda', [App\Http\Controllers\HomeController::class, 'tienda'])->name('tienda.products');
 Route::get('/contact', [App\Http\Controllers\HomeController::class, 'contact']);
 Route::get('/product-detail', [App\Http\Controllers\HomeController::class, 'detail']);
 Route::get('/checkout', [App\Http\Controllers\HomeController::class, 'checkout']);
 
-Route::post('cart/add', [App\Http\Controllers\CartController::class, 'add'])->name('add');
+Route::post('add', [App\Http\Controllers\CartController::class, 'add'])->name('add');
 Route::get('cart', [App\Http\Controllers\CartController::class, 'cart'])->name('cart');
 Route::get('cart/clear', [App\Http\Controllers\CartController::class, 'clear'])->name('clear');
 Route::post('cart/removeitem', [App\Http\Controllers\CartController::class, 'removeItem'])->name('removeitem');

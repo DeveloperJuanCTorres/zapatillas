@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
+use Cart;
 
 class HomeController extends Controller
 {
@@ -40,13 +41,41 @@ class HomeController extends Controller
         return view('home', compact('categories','products'));
     }
 
-    public function tienda()
+    public function tienda( Request $request)
     {
-        $categories = Taxonomy::with('products')->get();
-        $brands = Brand::with('products')->get();
+        // $categories = Taxonomy::with('products')->get();
+        // $brands = Brand::with('products')->get();
+        // $colors = Color::all();
+        // $products = Product::all();
+        // return view('tienda',compact('categories','brands','colors','products'));
+
+        $products = Product::query();
+
+        if ($request->has('categories')) {
+            $products->whereIn('taxonomy_id', $request->categories);
+        }
+
+        if ($request->has('brands')) {
+            $products->whereIn('brand_id', $request->brands);
+        }
+
+        if ($request->has('colors')) {
+            $products->whereHas('colors', function($query) use ($request) {
+                $query->whereIn('color_id', $request->colors);
+            });
+        }
+
+        $products = $products->paginate(9);
+
+        if ($request->ajax()) {
+            return view('product-list', compact('products'))->render();
+        }
+
+        $categories = Taxonomy::all();
+        $brands = Brand::all();
         $colors = Color::all();
-        $products = Product::all();
-        return view('tienda',compact('categories','brands','colors','products'));
+
+        return view('tienda', compact('products', 'categories', 'brands', 'colors'));
     }
 
     public function contact()
@@ -217,7 +246,7 @@ class HomeController extends Controller
                 "ruta_imagen" => 'https://zapatillas.mastersoftstore.com/storage/pedidos/' . $pdfPath,
             ]);
 
-
+            Cart::destroy();
             return response()->json(['status' => true, 'msg' => 'El detalle de su pedido se envió a su WhatsApp']); 
         } catch (\Throwable $th) {
             //throw $th;
